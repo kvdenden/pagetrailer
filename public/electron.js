@@ -1,13 +1,19 @@
-const { app, BrowserWindow } = require("electron");
-
 const path = require("path");
 
-const isDev = !app.isPackaged;
+const { app, BrowserWindow } = require("electron");
+require("./ipc");
 
 let mainWindow;
-
 function createWindow() {
-  mainWindow = new BrowserWindow({ width: 900, height: 680 });
+  const isDev = !app.isPackaged;
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 680,
+    webPreferences: {
+      nodeIntegration: false,
+      preload: path.join(__dirname, "preload.js")
+    }
+  });
   mainWindow.loadURL(
     isDev
       ? "http://localhost:3000"

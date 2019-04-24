@@ -1,6 +1,9 @@
-const path = require("path");
+require("dotenv").config();
 
+const path = require("path");
 const { app, BrowserWindow } = require("electron");
+
+const devtools = require("./devtools");
 require("./ipc");
 
 let mainWindow;
@@ -21,7 +24,7 @@ function createWindow() {
   );
   if (isDev) {
     // Open the DevTools.
-    //BrowserWindow.addDevToolsExtension('<location to your react chrome extension>');
+    devtools.forEach(devtool => BrowserWindow.addDevToolsExtension(devtool));
     mainWindow.webContents.openDevTools();
   }
   mainWindow.on("closed", () => (mainWindow = null));

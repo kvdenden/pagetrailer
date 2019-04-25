@@ -7,7 +7,8 @@ import DocumentList from "./DocumentList";
 const App = ({ documents, fetchDocuments }) => {
   useEffect(() => {
     fetchDocuments();
-  }, []);
+  }, [fetchDocuments]);
+
   return (
     <div>
       <h1>Your documents</h1>

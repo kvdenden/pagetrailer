@@ -1,9 +1,6 @@
-require("dotenv").config();
-
 const path = require("path");
 const { app, BrowserWindow } = require("electron");
 
-const devtools = require("./devtools");
 require("./ipc");
 
 let mainWindow;
@@ -13,7 +10,6 @@ function createWindow() {
     width: 900,
     height: 680,
     webPreferences: {
-      nodeIntegration: false,
       preload: path.join(__dirname, "preload.js")
     }
   });
@@ -24,7 +20,6 @@ function createWindow() {
   );
   if (isDev) {
     // Open the DevTools.
-    devtools.forEach(devtool => BrowserWindow.addDevToolsExtension(devtool));
     mainWindow.webContents.openDevTools();
   }
   mainWindow.on("closed", () => (mainWindow = null));

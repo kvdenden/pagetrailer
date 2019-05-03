@@ -20,7 +20,7 @@ class Document {
     return withTmpDir(tmpdir => this._store(document, message, tmpdir));
   }
 
-  // return Promise with array of version ids
+  // return Promise with array of commit data { id, author, message, time }
   history() {
     return new Promise((resolve, reject) => {
       nodegit.Repository.openBare(this._origin)

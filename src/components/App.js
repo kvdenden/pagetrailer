@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
-import { fetchDocuments } from "../actions";
+import { fetchDocuments, createDocument, deleteDocument } from "../actions";
 import DocumentList from "./DocumentList";
 
-const App = ({ documents, fetchDocuments }) => {
+const App = ({ documents, fetchDocuments, createDocument, deleteDocument }) => {
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
@@ -12,7 +12,11 @@ const App = ({ documents, fetchDocuments }) => {
   return (
     <div>
       <h1>Your documents</h1>
-      <DocumentList documents={documents} />
+      <DocumentList
+        documents={documents}
+        onCreate={createDocument}
+        onDelete={deleteDocument}
+      />
     </div>
   );
 };
@@ -25,5 +29,5 @@ const mapStateToProps = ({ documents }) => {
 
 export default connect(
   mapStateToProps,
-  { fetchDocuments }
+  { fetchDocuments, createDocument, deleteDocument }
 )(App);

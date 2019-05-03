@@ -1,30 +1,60 @@
 import React from "react";
 import PropTypes from "prop-types";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction
+} from "@material-ui/core";
 
-const DocumentItem = ({ document }) => {
+import NewDocumentButton from "./NewDocumentButton";
+import DeleteDocumentButton from "./DeleteDocumentButton";
+
+const DocumentItem = ({ document, onDelete }) => {
   const { title } = document;
-  return <li>{title}</li>;
+  return (
+    <ListItem>
+      <ListItemText primary={title} />
+      <ListItemSecondaryAction>
+        <DeleteDocumentButton document={document} onDelete={onDelete} />
+      </ListItemSecondaryAction>
+    </ListItem>
+  );
 };
 
-const DocumentList = ({ documents }) => {
+const DocumentList = ({ documents, onCreate, onDelete }) => {
   const items = documents.map(document => (
-    <DocumentItem key={document.id} document={document} />
+    <DocumentItem
+      key={document.key}
+      document={document}
+      onDelete={() => onDelete(document)}
+    />
   ));
 
-  return <ul>{items}</ul>;
+  return (
+    <div>
+      <NewDocumentButton onCreate={onCreate} />
+      <List>{items}</List>
+    </div>
+  );
 };
 
 DocumentList.propTypes = {
   documents: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.id,
-      title: PropTypes.string
+      key: PropTypes.id,
+      title: PropTypes.string,
+      description: PropTypes.string
     })
-  )
+  ),
+  onCreate: PropTypes.func,
+  onDelete: PropTypes.func
 };
 
 DocumentList.defaultProps = {
-  documents: []
+  documents: [],
+  onCreate: () => {},
+  onDelete: () => {}
 };
 
 export default DocumentList;

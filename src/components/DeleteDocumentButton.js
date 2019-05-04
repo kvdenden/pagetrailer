@@ -14,7 +14,7 @@ const DeleteDocumentButton = ({ document, onDelete }) => {
 
   const closeDialog = () => setOpen(false);
   return (
-    <div>
+    <>
       <IconButton aria-label="Delete" onClick={() => setOpen(true)}>
         <DeleteIcon />
       </IconButton>
@@ -40,7 +40,7 @@ const DeleteDocumentButton = ({ document, onDelete }) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 };
 

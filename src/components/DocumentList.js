@@ -1,33 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction
-} from "@material-ui/core";
+import { List, ListItem, ListItemText } from "@material-ui/core";
 
 import NewDocumentButton from "./NewDocumentButton";
-import DeleteDocumentButton from "./DeleteDocumentButton";
 
-const DocumentItem = ({ document, onDelete }) => {
+const DocumentItem = ({ document, onSelect }) => {
   const { title } = document;
   return (
-    <ListItem>
+    <ListItem button onClick={onSelect}>
       <ListItemText primary={title} />
-      <ListItemSecondaryAction>
-        <DeleteDocumentButton document={document} onDelete={onDelete} />
-      </ListItemSecondaryAction>
     </ListItem>
   );
 };
 
-const DocumentList = ({ documents, onCreate, onDelete }) => {
+const DocumentList = ({ documents, onCreate, onSelect }) => {
   const items = documents.map(document => (
     <DocumentItem
       key={document.key}
       document={document}
-      onDelete={() => onDelete(document)}
+      onSelect={() => onSelect(document)}
     />
   ));
 
@@ -48,13 +39,13 @@ DocumentList.propTypes = {
     })
   ),
   onCreate: PropTypes.func,
-  onDelete: PropTypes.func
+  onSelect: PropTypes.func
 };
 
 DocumentList.defaultProps = {
   documents: [],
   onCreate: () => {},
-  onDelete: () => {}
+  onSelect: () => {}
 };
 
 export default DocumentList;

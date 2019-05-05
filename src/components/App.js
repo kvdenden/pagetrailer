@@ -3,63 +3,45 @@ import { connect } from "react-redux";
 
 import { CssBaseline } from "@material-ui/core";
 
-import {
-  fetchDocuments,
-  createDocument,
-  deleteDocument,
-  selectDocument
-} from "../actions";
-import DocumentDrawer from "./DocumentDrawer";
-import DocumentDetails from "./DocumentDetails";
+import styled from "styled-components";
 
-const App = ({
-  documents,
-  selectedDocument,
-  fetchDocuments,
-  createDocument,
-  deleteDocument,
-  selectDocument
-}) => {
+import { fetchDocuments, selectDocument } from "../actions";
+
+import Sidebar from "./Sidebar";
+import MainContent from "./MainContent";
+
+const Container = styled.div`
+  display: flex;
+`;
+
+const App = ({ documents, selected, fetchDocuments, selectDocument }) => {
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
 
   useEffect(() => {
-    if (!selectedDocument && documents.length > 0) {
-      selectDocument(documents[0]);
+    const [firstDocument] = Object.values(documents);
+    if (!selected && firstDocument) {
+      selectDocument(firstDocument);
     }
-  }, [documents, selectedDocument, selectDocument]);
+  }, [selected, documents, selectDocument]);
 
   return (
     <>
       <CssBaseline />
-      <div style={{ display: "flex" }}>
-        <DocumentDrawer
-          documents={documents}
-          selectedDocument={selectedDocument}
-          onSelect={selectDocument}
-          onCreate={createDocument}
-        />
-        <main style={{ flexGrow: 1, padding: "1em 2.5em" }}>
-          <DocumentDetails
-            document={selectedDocument}
-            onCreate={createDocument}
-            onDelete={deleteDocument}
-          />
-        </main>
-      </div>
+      <Container>
+        <Sidebar />
+        <MainContent />
+      </Container>
     </>
   );
 };
 
 const mapStateToProps = ({ documents, selected }) => {
-  return {
-    documents: Object.values(documents),
-    selectedDocument: documents[selected]
-  };
+  return { documents, selected };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchDocuments, createDocument, deleteDocument, selectDocument }
+  { fetchDocuments, selectDocument }
 )(App);

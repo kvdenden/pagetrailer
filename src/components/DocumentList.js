@@ -4,8 +4,8 @@ import { List, ListItem, ListItemText } from "@material-ui/core";
 
 import NewDocumentButton from "./NewDocumentButton";
 
-const DocumentItem = ({ document, selected, onSelect }) => {
-  const { title } = document;
+const DocumentItem = ({ document, onSelect }) => {
+  const { title, selected } = document;
   return (
     <ListItem button selected={selected} onClick={onSelect}>
       <ListItemText primary={title} />
@@ -13,12 +13,11 @@ const DocumentItem = ({ document, selected, onSelect }) => {
   );
 };
 
-const DocumentList = ({ documents, selectedDocument, onCreate, onSelect }) => {
+const DocumentList = ({ documents, onCreate, onSelect }) => {
   const items = documents.map(document => (
     <DocumentItem
       key={document.key}
       document={document}
-      selected={selectedDocument && document.key === selectedDocument.key}
       onSelect={() => onSelect(document)}
     />
   ));
@@ -36,19 +35,16 @@ DocumentList.propTypes = {
     PropTypes.shape({
       key: PropTypes.string,
       title: PropTypes.string,
-      description: PropTypes.string
+      description: PropTypes.string,
+      selected: PropTypes.bool
     })
   ),
-  selected: PropTypes.shape({
-    key: PropTypes.string
-  }),
   onCreate: PropTypes.func,
   onSelect: PropTypes.func
 };
 
 DocumentList.defaultProps = {
   documents: [],
-  selected: null,
   onCreate: () => {},
   onSelect: () => {}
 };

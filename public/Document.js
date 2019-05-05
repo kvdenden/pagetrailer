@@ -11,7 +11,7 @@ class Document {
   }
 
   // return Promise with buffer with file contents
-  retrieve(version = "latest") {
+  retrieve(version = "HEAD") {
     return withTmpDir(tmpdir => this._retrieve(version, tmpdir));
   }
 
@@ -24,8 +24,14 @@ class Document {
   history() {
     return new Promise((resolve, reject) => {
       nodegit.Repository.openBare(this._origin)
-        .then(repo => repo.getMasterCommit())
-        .then(commit => commit.history())
+        .then(repo => repo.getHeadCommit())
+        .then(commit => {
+          if (commit) {
+            return commit.history();
+          } else {
+            resolve([]);
+          }
+        })
         .then(eventEmitter => {
           eventEmitter.on("end", commits => {
             const history = commits.map(commit => {
@@ -44,13 +50,16 @@ class Document {
           });
 
           eventEmitter.start();
+        })
+        .catch(() => {
+          resolve([]);
         });
     });
   }
 
   async _retrieve(version, tmpdir) {
     const repo = await nodegit.Clone(this._origin, tmpdir);
-    if (version && version !== "latest") {
+    if (version && version !== "HEAD") {
       const commit = await nodegit.Commit.lookup(repo, version);
       await nodegit.Reset(repo, commit, nodegit.Reset.TYPE.HARD);
     }

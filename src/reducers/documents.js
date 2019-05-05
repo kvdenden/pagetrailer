@@ -23,7 +23,8 @@ export default (state = INITIAL_STATE, action) => {
     }
     case FETCH_DOCUMENT_HISTORY: {
       const { key, history } = action.payload;
-      return { ...state, [key]: { ...state[key], history } };
+      const document = state[key];
+      return { ...state, [key]: { ...document, history } };
     }
     default: {
       return state;

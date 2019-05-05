@@ -18,3 +18,10 @@ ipcMain.on("deleteDocument", (event, key) => {
     event.sender.send("deleteDocument", key);
   });
 });
+
+ipcMain.on("fetchHistory", (event, key) => {
+  documentStore
+    .get(key)
+    .then(({ document }) => document.history())
+    .then(history => event.sender.send("fetchHistory", history));
+});

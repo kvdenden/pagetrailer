@@ -1,22 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 import { CssBaseline } from "@material-ui/core";
 
-import { fetchDocuments, createDocument, deleteDocument } from "../actions";
+import {
+  fetchDocuments,
+  createDocument,
+  deleteDocument,
+  selectDocument
+} from "../actions";
 import DocumentDrawer from "./DocumentDrawer";
 import DocumentDetails from "./DocumentDetails";
 
-const App = ({ documents, fetchDocuments, createDocument, deleteDocument }) => {
-  const [document, selectDocument] = useState();
-
+const App = ({
+  documents,
+  selectedDocument,
+  fetchDocuments,
+  createDocument,
+  deleteDocument,
+  selectDocument
+}) => {
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
 
   useEffect(() => {
-    selectDocument(documents[0]);
-  }, [documents]);
+    if (!selectedDocument && documents.length > 0) {
+      selectDocument(documents[0]);
+    }
+  }, [documents, selectedDocument, selectDocument]);
 
   return (
     <>
@@ -24,12 +36,13 @@ const App = ({ documents, fetchDocuments, createDocument, deleteDocument }) => {
       <div style={{ display: "flex" }}>
         <DocumentDrawer
           documents={documents}
+          selectedDocument={selectedDocument}
           onSelect={selectDocument}
           onCreate={createDocument}
         />
         <main style={{ flexGrow: 1, padding: "1em 2.5em" }}>
           <DocumentDetails
-            document={document}
+            document={selectedDocument}
             onCreate={createDocument}
             onDelete={deleteDocument}
           />
@@ -39,13 +52,14 @@ const App = ({ documents, fetchDocuments, createDocument, deleteDocument }) => {
   );
 };
 
-const mapStateToProps = ({ documents }) => {
+const mapStateToProps = ({ documents, selected }) => {
   return {
-    documents: Object.values(documents)
+    documents: Object.values(documents),
+    selectedDocument: documents[selected]
   };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchDocuments, createDocument, deleteDocument }
+  { fetchDocuments, createDocument, deleteDocument, selectDocument }
 )(App);

@@ -1,4 +1,4 @@
-const { app, dialog } = require("electron");
+const { dialog } = require("electron");
 const fs = require("fs-extra");
 
 module.exports = (fileBuffer, title) => {

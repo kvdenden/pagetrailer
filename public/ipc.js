@@ -1,6 +1,7 @@
 const { ipcMain } = require("electron");
 
 const documentStore = require("./documentStore");
+const saveFile = require("./saveFile");
 
 ipcMain.on("fetchDocuments", event => {
   const documents = documentStore.list();
@@ -35,4 +36,16 @@ ipcMain.on("storeDocument", (event, key, file, message) => {
     .then(version => {
       event.sender.send("storeDocument", version);
     });
+});
+
+const saveDocument = async (key, versionId) => {
+  const { title, document } = await documentStore.get(key);
+  const fileBuffer = await document.retrieve(versionId);
+  return saveFile(fileBuffer, title);
+};
+
+ipcMain.on("retrieveDocument", (event, key, versionId) => {
+  saveDocument(key, versionId).then(filePath => {
+    event.sender.send("retrieveDocument", filePath);
+  });
 });

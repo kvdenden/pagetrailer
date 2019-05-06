@@ -3,8 +3,8 @@ import {
   CREATE_DOCUMENT,
   DELETE_DOCUMENT,
   FETCH_DOCUMENT_HISTORY,
-  STORE_DOCUMENT
-  // RETRIEVE_DOCUMENT
+  STORE_DOCUMENT,
+  RETRIEVE_DOCUMENT
 } from "./types";
 
 export const fetchDocuments = () => async dispatch => {
@@ -63,4 +63,15 @@ export const storeDocument = ({ key }, file, message) => async dispatch => {
   });
 
   window.ipc.send("storeDocument", key, file.path, message);
+};
+
+export const retrieveDocument = ({ key }, versionId) => async dispatch => {
+  window.ipc.once("retrieveDocument", (_, path) => {
+    dispatch({
+      type: RETRIEVE_DOCUMENT,
+      payload: { key, path }
+    });
+  });
+
+  window.ipc.send("retrieveDocument", key, versionId);
 };

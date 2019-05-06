@@ -5,6 +5,7 @@ import moment from "moment";
 
 import {
   CircularProgress,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -13,7 +14,7 @@ import {
 
 import SaveIcon from "@material-ui/icons/SaveAlt";
 
-const DocumentVersion = ({ message, timestamp, versionNumber }) => {
+const DocumentVersion = ({ message, timestamp, versionNumber, onRetrieve }) => {
   const primaryText = message || `(Version ${versionNumber})`;
   const secondaryText = moment(timestamp).calendar();
 
@@ -21,13 +22,15 @@ const DocumentVersion = ({ message, timestamp, versionNumber }) => {
     <ListItem>
       <ListItemText primary={primaryText} secondary={secondaryText} />
       <ListItemSecondaryAction>
-        <SaveIcon />
+        <IconButton aria-label="Save" onClick={onRetrieve}>
+          <SaveIcon />
+        </IconButton>
       </ListItemSecondaryAction>
     </ListItem>
   );
 };
 
-const DocumentHistory = ({ document }) => {
+const DocumentHistory = ({ document, onRetrieve }) => {
   const { history } = document;
 
   if (!history) return <CircularProgress />;
@@ -38,6 +41,7 @@ const DocumentHistory = ({ document }) => {
       key={version.id}
       {...version}
       versionNumber={historyLength - index} // history is in reverse chronological order
+      onRetrieve={() => onRetrieve(version)}
     />
   ));
   return <List>{items}</List>;
@@ -52,11 +56,13 @@ DocumentHistory.propTypes = {
         timestamp: PropTypes.number
       })
     )
-  })
+  }),
+  onRetrieve: PropTypes.func
 };
 
 DocumentHistory.defaultProps = {
-  document: {}
+  document: {},
+  onRetrieve: () => {}
 };
 
 export default DocumentHistory;

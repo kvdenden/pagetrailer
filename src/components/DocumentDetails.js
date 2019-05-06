@@ -4,7 +4,7 @@ import DeleteDocumentButton from "./DeleteDocumentButton";
 import DocumentHistory from "./DocumentHistory";
 import StoreDocumentDropzone from "./StoreDocumentDropzone";
 
-const DocumentDetails = ({ document, onStore, onDelete }) => {
+const DocumentDetails = ({ document, onStore, onRetrieve, onDelete }) => {
   if (!document) return null;
 
   const { title } = document;
@@ -13,7 +13,7 @@ const DocumentDetails = ({ document, onStore, onDelete }) => {
     <div>
       <h1>{title}</h1>
       <StoreDocumentDropzone onStore={onStore} />
-      <DocumentHistory document={document} />
+      <DocumentHistory document={document} onRetrieve={onRetrieve} />
       <div style={{ position: "absolute", top: "2em", right: "0.5em" }}>
         <DeleteDocumentButton document={document} onDelete={onDelete} />
       </div>

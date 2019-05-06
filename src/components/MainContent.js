@@ -3,7 +3,12 @@ import { connect } from "react-redux";
 
 import styled from "styled-components";
 
-import { deleteDocument, fetchHistory, storeDocument } from "../actions";
+import {
+  deleteDocument,
+  fetchHistory,
+  storeDocument,
+  retrieveDocument
+} from "../actions";
 
 import DocumentDetails from "./DocumentDetails";
 
@@ -16,7 +21,8 @@ const MainContent = ({
   document,
   deleteDocument,
   fetchHistory,
-  storeDocument
+  storeDocument,
+  retrieveDocument
 }) => {
   useEffect(() => {
     if (document && !document.history) {
@@ -29,6 +35,7 @@ const MainContent = ({
       <DocumentDetails
         document={document}
         onStore={({ file, message }) => storeDocument(document, file, message)}
+        onRetrieve={version => retrieveDocument(document, version.id)}
         onDelete={() => deleteDocument(document)}
       />
     </MainContainer>
@@ -43,5 +50,5 @@ const mapStateToProps = ({ documents, selected }) => {
 
 export default connect(
   mapStateToProps,
-  { deleteDocument, fetchHistory, storeDocument }
+  { deleteDocument, fetchHistory, storeDocument, retrieveDocument }
 )(MainContent);

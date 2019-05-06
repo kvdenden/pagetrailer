@@ -4,7 +4,8 @@ import {
   FETCH_DOCUMENTS,
   CREATE_DOCUMENT,
   DELETE_DOCUMENT,
-  FETCH_DOCUMENT_HISTORY
+  FETCH_DOCUMENT_HISTORY,
+  STORE_DOCUMENT
 } from "../actions/types";
 
 const INITIAL_STATE = {};
@@ -25,6 +26,15 @@ export default (state = INITIAL_STATE, action) => {
       const { key, history } = action.payload;
       const document = state[key];
       return { ...state, [key]: { ...document, history } };
+    }
+    case STORE_DOCUMENT: {
+      const { key, version } = action.payload;
+      const document = state[key];
+      const { history = [] } = document;
+      return {
+        ...state,
+        [key]: { ...document, history: [version, ...history] }
+      };
     }
     default: {
       return state;

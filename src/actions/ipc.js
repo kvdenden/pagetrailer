@@ -2,8 +2,8 @@ import {
   FETCH_DOCUMENTS,
   CREATE_DOCUMENT,
   DELETE_DOCUMENT,
-  FETCH_DOCUMENT_HISTORY
-  // STORE_DOCUMENT,
+  FETCH_DOCUMENT_HISTORY,
+  STORE_DOCUMENT
   // RETRIEVE_DOCUMENT
 } from "./types";
 
@@ -52,4 +52,15 @@ export const fetchHistory = ({ key }) => async dispatch => {
   });
 
   window.ipc.send("fetchHistory", key);
+};
+
+export const storeDocument = ({ key }, file, message) => async dispatch => {
+  window.ipc.once("storeDocument", (_, version) => {
+    dispatch({
+      type: STORE_DOCUMENT,
+      payload: { key, version }
+    });
+  });
+
+  window.ipc.send("storeDocument", key, file.path, message);
 };

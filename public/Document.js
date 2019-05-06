@@ -15,12 +15,12 @@ class Document {
     return withTmpDir(tmpdir => this._retrieve(version, tmpdir));
   }
 
-  // return Promise with version id of saved document
-  store(document, message) {
-    return withTmpDir(tmpdir => this._store(document, message, tmpdir));
+  // return Promise with version data { id, author, message, time }
+  store(file, message) {
+    return withTmpDir(tmpdir => this._store(file, message, tmpdir));
   }
 
-  // return Promise with array of commit data { id, author, message, time }
+  // return Promise with array of version data { id, author, message, time }
   history() {
     return new Promise((resolve, reject) => {
       nodegit.Repository.openBare(this._origin)
@@ -34,14 +34,7 @@ class Document {
         })
         .then(eventEmitter => {
           eventEmitter.on("end", commits => {
-            const history = commits.map(commit => {
-              return {
-                id: commit.sha(),
-                author: commit.author().name(),
-                message: commit.message(),
-                time: commit.time()
-              };
-            });
+            const history = commits.map(this._versionData);
             resolve(history);
           });
 
@@ -69,12 +62,12 @@ class Document {
     return zip.toBuffer();
   }
 
-  async _store(document, message, tmpdir) {
+  async _store(file, message, tmpdir) {
     const repo = await nodegit.Clone(this._origin, tmpdir);
 
     rimraf.sync(path.join(tmpdir, "*"));
 
-    const zip = new AdmZip(document);
+    const zip = new AdmZip(file);
     zip.extractAllTo(tmpdir, true);
 
     const index = await repo.refreshIndex();
@@ -92,7 +85,17 @@ class Document {
     const origin = await repo.getRemote("origin");
     await origin.push(["refs/heads/master:refs/heads/master"]);
 
-    return oid.tostrS();
+    const commit = await repo.getCommit(oid);
+    return this._versionData(commit);
+  }
+
+  _versionData(commit) {
+    return {
+      id: commit.sha(),
+      author: commit.author().name(),
+      message: commit.message(),
+      timestamp: commit.timeMs()
+    };
   }
 }
 

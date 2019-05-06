@@ -23,5 +23,16 @@ ipcMain.on("fetchHistory", (event, key) => {
   documentStore
     .get(key)
     .then(({ document }) => document.history())
-    .then(history => event.sender.send("fetchHistory", history));
+    .then(history => {
+      event.sender.send("fetchHistory", history);
+    });
+});
+
+ipcMain.on("storeDocument", (event, key, file, message) => {
+  documentStore
+    .get(key)
+    .then(({ document }) => document.store(file, message))
+    .then(version => {
+      event.sender.send("storeDocument", version);
+    });
 });

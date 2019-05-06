@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 
@@ -39,7 +40,23 @@ const Placeholder = () => {
   return <p>Drop your document here, or click to select file.</p>;
 };
 
-const DocumentDropzone = ({ onChange }) => {
+// by default, react-dropzone will override file path (added by electron) with filename
+// to prevent this, we need to pass in our own version of getFilesFromEvent
+const getFilesFromEvent = event => {
+  const files = [];
+  const fileList = event.dataTransfer
+    ? event.dataTransfer.files
+    : event.target.files;
+
+  for (let i = 0; i < fileList.length; i++) {
+    const file = fileList.item(i);
+    files.push(file);
+  }
+
+  return files;
+};
+
+const DocumentDropzone = ({ onDrop }) => {
   const {
     getRootProps,
     getInputProps,
@@ -50,21 +67,10 @@ const DocumentDropzone = ({ onChange }) => {
   } = useDropzone({
     accept:
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    multiple: false
+    multiple: false,
+    onDrop: ([acceptedFile]) => onDrop(acceptedFile),
+    getFilesFromEvent
   });
-
-  useEffect(() => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      onChange(reader.result);
-    };
-
-    if (acceptedFile) {
-      reader.readAsArrayBuffer(acceptedFile);
-    } else {
-      onChange(null);
-    }
-  }, [onChange, acceptedFile]);
 
   return (
     <DropzoneContainer
@@ -74,6 +80,14 @@ const DocumentDropzone = ({ onChange }) => {
       {acceptedFile ? <AcceptedFile file={acceptedFile} /> : <Placeholder />}
     </DropzoneContainer>
   );
+};
+
+DocumentDropzone.propTypes = {
+  onDrop: PropTypes.func
+};
+
+DocumentDropzone.defaultProps = {
+  onDrop: () => {}
 };
 
 export default DocumentDropzone;
